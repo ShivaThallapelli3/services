@@ -39,7 +39,7 @@ function UpdateProfile() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/profile/update",
+        "https://services-4zdo.onrender.com/api/user/profile/update",
         form,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -70,7 +70,7 @@ function UpdateProfile() {
 
       try {
         setIsInitialLoading(true);
-        const res = await axios.get("http://localhost:5000/api/user/profile", {
+        const res = await axios.get("https://services-4zdo.onrender.com/api/user/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         
