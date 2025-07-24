@@ -38,7 +38,7 @@ const ProfileInfoPage = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/profile", {
+        const res = await axios.get("https://services-4zdo.onrender.com/api/user/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProfile(res.data);
@@ -59,7 +59,7 @@ const ProfileInfoPage = () => {
     // console.log("clicked");
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/user/contact/delete/${_id}`,
+        `https://services-4zdo.onrender.com/api/user/contact/delete/${_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
