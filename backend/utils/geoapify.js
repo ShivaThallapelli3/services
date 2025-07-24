@@ -61,26 +61,69 @@ export async function fetchServices({
 }
 
 async function fetchCurrLocation({ lat, lng }) {
-  const url = `${GEOAPIFYCURRLOC_URL}?lat=${lat}&lon=${lng}&type=city&apiKey=${GEOAPIFY_API_KEY}`;
+  // Remove the type=city parameter to get full location data
+  const url = `${GEOAPIFYCURRLOC_URL}?lat=${lat}&lon=${lng}&format=json&apiKey=${GEOAPIFY_API_KEY}`;
+  
+  console.log("🌍 Fetching location from:", url);
+  
   try {
-    const { data } = await axios.get(url);
-    console.log("Geoapify reverse data:", data);
-    if (
-      data.features &&
-      data.features[0] &&
-      data.features[0].properties &&
-      data.features[0].properties.city
-    ) {
-      return data.features[0].properties.city;
-    } else {
-      throw new Error("City not found in Geoapify response");
+    const { data } = await axios.get(url, {
+      timeout: 8000, // 8 second timeout
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'EmergencyServices/1.0'
+      }
+    });
+    
+    console.log("📍 Geoapify reverse geocoding response:", JSON.stringify(data, null, 2));
+    
+    // Check if we have valid response
+    if (!data.features || data.features.length === 0) {
+      throw new Error("No location data found in Geoapify response");
     }
+    
+    const feature = data.features[0];
+    const props = feature.properties;
+    
+    // Extract location information with multiple fallbacks
+    const locationData = {
+      city: props.city || 
+            props.town || 
+            props.village || 
+            props.state_district ||
+            props.address_line1 ||
+            null,
+      state: props.state || props.region || null,
+      country: props.country || null,
+      formatted: props.formatted || null,
+      postcode: props.postcode || null,
+      full_address: props
+    };
+    
+    console.log("🏙️  Extracted location data:", locationData);
+    
+    // Ensure we have at least a city name
+    if (!locationData.city) {
+      // Last resort: try to parse from formatted address
+      if (locationData.formatted) {
+        locationData.city = locationData.formatted.split(',')[0].trim();
+      } else {
+        throw new Error("Unable to determine city from location data");
+      }
+    }
+    
+    return locationData;
+    
   } catch (error) {
-    console.error(
-      "Geoapify fetch error:",
-      error.response?.data || error.message
-    );
-    throw error;
+    console.error("❌ Geoapify reverse geocoding error:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      coordinates: { lat, lng }
+    });
+    
+    // Re-throw with more context
+    throw new Error(`Location fetch failed: ${error.message}`);
   }
 }
 export { sortByStatus, fetchCurrLocation };
