@@ -22,7 +22,7 @@ const SignupPage = () => {
     setError("");
     console.log(form);
     try {
-      await axios.post("http://localhost:5000/api/user/register", form);
+      await axios.post("https://services-4zdo.onrender.com/api/user/register", form);
       // alert("Registration successful! You can log in now.");
       toast.success("Registration successful! You can log in now."); 
       navigate("/login");
