@@ -33,30 +33,72 @@ const EmergencyHeader = () => {
     }
     const lat = location.lat;
     const lng = location.lng;
-
-    async function fetchCity() {
-      try {
-        let url = `https://services-4zdo.onrender.com/api/location?lat=${lat}&lng=${lng}`;
+      async function fetchCity() {
+    try {
+      setIsLoadingLocation(true);
+        
+       let url = `https://services-4zdo.onrender.com/api/location?lat=${lat}&lng=${lng}`;
+        
+        console.log("Fetching city with coordinates:", { lat, lng });
+        
         const response = await fetch(url);
-        const data = await response.json();
+        
         if (!response.ok) {
-          console.error("Location fetch failed:", data.error);
+          throw new Error(`API returned ${response.status}`);
         }
-        // setCurrLocation(data.city || data.location ||  "Location unavailable");
-        if (data.city) {
-          setCurrLocation(data.city);
-        } else if (data.location) {
-          setCurrLocation(data.location);
-        } else if (data.address && data.address.city) {
-          setCurrLocation(data.address.city);
-        }else{
-        setCurrLocation("Location unavailable");
+        
+        const data = await response.json();
+        console.log("Full API response:", data); // Debug log
+        
+        // Parse the GeoJSON FeatureCollection response
+        if (data.type === "FeatureCollection" && data.features && data.features.length > 0) {
+          const feature = data.features[0];
+          const properties = feature.properties;
+          
+          // Extract city from the properties object (as shown in your response)
+          const city = properties.city || 
+                       properties.address_line1 || 
+                       properties.formatted?.split(',')[0] ||
+                       "Location found";
+          
+          console.log("Extracted city:", city); // Debug log
+          setCurrLocation(city);
+          
+        } else {
+          console.log("No features found in response");
+          setCurrLocation("City not found");
         }
+        
       } catch (err) {
         console.error("City fetch error:", err);
-        setCurrLocation("Location unavailable");
+        setCurrLocation(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
+      } finally {
+        setIsLoadingLocation(false);
       }
     }
+    // async function fetchCity() {
+    //   try {
+    //     let url = `https://services-4zdo.onrender.com/api/location?lat=${lat}&lng=${lng}`;
+    //     const response = await fetch(url);
+    //     const data = await response.json();
+    //     if (!response.ok) {
+    //       console.error("Location fetch failed:", data.error);
+    //     }
+    //     // setCurrLocation(data.city || data.location ||  "Location unavailable");
+    //     if (data.city) {
+    //       setCurrLocation(data.city);
+    //     } else if (data.location) {
+    //       setCurrLocation(data.location);
+    //     } else if (data.address && data.address.city) {
+    //       setCurrLocation(data.address.city);
+    //     }else{
+    //     setCurrLocation("Location unavailable");
+    //     }
+    //   } catch (err) {
+    //     console.error("City fetch error:", err);
+    //     setCurrLocation("Location unavailable");
+    //   }
+    // }
 
     fetchCity();
   }, [location]);
