@@ -20,7 +20,7 @@ const SOSButton = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/user/sos",
+        "https://services-4zdo.onrender.com/api/user/sos",
         {
           lat: location.lat,
           lng: location.lng,
