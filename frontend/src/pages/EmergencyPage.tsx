@@ -36,7 +36,7 @@ export default function EmergencyPage() {
 
     async function fetchServices() {
       setLoading(true);
-      let url = `http://localhost:5000/api/services/nearby?lat=${lat}&lng=${lng}`;
+      let url = `https://services-4zdo.onrender.com/api/services/nearby?lat=${lat}&lng=${lng}`;
       if (filter !== "all") url += `&type=${filter}`;
       try {
         const response = await fetch(url);
