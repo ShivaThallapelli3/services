@@ -36,7 +36,7 @@ const EmergencyHeader = () => {
 
     async function fetchCity() {
       try {
-        let url = `http://localhost:5000/api/location?lat=${lat}&lng=${lng}`;
+        let url = `https://services-4zdo.onrender.com/api/location?lat=${lat}&lng=${lng}`;
         const response = await fetch(url);
         const data = await response.json();
         if (!response.ok) {
