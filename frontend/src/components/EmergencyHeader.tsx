@@ -42,7 +42,15 @@ const EmergencyHeader = () => {
         if (!response.ok) {
           console.error("Location fetch failed:", data.error);
         }
-        setCurrLocation(data.city || "Location unavailable");
+        // setCurrLocation(data.city || data.location ||  "Location unavailable");
+        if (data.city) {
+          setCurrLocation(data.city);
+        } else if (data.location) {
+          setCurrLocation(data.location);
+        } else if (data.address && data.address.city) {
+          setCurrLocation(data.address.city);
+        }else{
+        setCurrLocation("Location unavailable");
       } catch (err) {
         console.error("City fetch error:", err);
         setCurrLocation("Location unavailable");
