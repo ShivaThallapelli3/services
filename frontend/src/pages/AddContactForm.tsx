@@ -27,7 +27,7 @@ const AddContactForm = () => {
 
   async function fetchContacts() {
     try {
-      const res = await axios.get("http://localhost:5000/api/contacts", {
+      const res = await axios.get("https://services-4zdo.onrender.com/api/contacts", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setContacts(res.data);
@@ -46,7 +46,7 @@ const AddContactForm = () => {
     setError("");
 
     try {
-      await axios.post("http://localhost:5000/api/contacts", form, {
+      await axios.post("https://services-4zdo.onrender.com/api/contacts", form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Contact added successfully!");
